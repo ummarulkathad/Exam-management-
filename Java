@@ -1,0 +1,122 @@
+import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+class Student {
+    String name;
+    int rollNumber;
+    String course;
+    int attendance;
+    String attendanceDate;
+}
+
+public class StudentManagementSystem {
+    public static void addStudent(Student[] students, int numStudents) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the student name: ");
+        students[numStudents].name = scanner.next();
+        System.out.print("Enter the student roll number: ");
+        students[numStudents].rollNumber = scanner.nextInt();
+        System.out.print("Enter the student course: ");
+        students[numStudents].course = scanner.next();
+        students[numStudents].attendance = 0;
+        students[numStudents].attendanceDate = "";
+
+        numStudents++;
+    }
+
+    public static void removeStudent(Student[] students, int numStudents, int rollNumber) {
+        int i;
+        for (i = 0; i < numStudents; i++) {
+            if (students[i].rollNumber == rollNumber) {
+                break;
+            }
+        }
+
+        if (i < numStudents) {
+            for (; i < numStudents - 1; i++) {
+                students[i] = students[i + 1];
+            }
+            numStudents--;
+        } else {
+            System.out.println("Student with roll number " + rollNumber + " not found.");
+        }
+    }
+
+    public static void markAttendance(Student[] students, int numStudents, int rollNumber, int isPresent) {
+        int i;
+        for (i = 0; i < numStudents; i++) {
+            if (students[i].rollNumber == rollNumber) {
+                break;
+            }
+        }
+
+        if (i < numStudents) {
+            students[i].attendance = isPresent;
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            students[i].attendanceDate = dateFormat.format(new Date());
+        } else {
+            System.out.println("Student with roll number " + rollNumber + " not found.");
+        }
+    }
+
+    public static void printReport(Student[] students, int numStudents) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        System.out.format("| %-20s | %-12s | %-20s | %-10s | %-20s |\n", "Name", "Roll Number", "Course", "Attendance", "Attendance Date");
+        System.out.format("+----------------------+--------------+----------------------+------------+----------------------+\n");
+
+        for (int i = 0; i < numStudents; i++) {
+            String attendanceStatus = (students[i].attendance == 1) ? "Present" : "Absent";
+            String formattedDate = (students[i].attendanceDate.equals("")) ? "" : dateFormat.format(new Date(Long.parseLong(students[i].attendanceDate)));
+
+            System.out.format("| %-20s | %-12d | %-20s | %-10s | %-20s |\n",
+                    students[i].name, students[i].rollNumber, students[i].course, attendanceStatus, formattedDate);
+        }
+        System.out.format("+----------------------+--------------+----------------------+------------+----------------------+\n");
+    }
+
+    public static void main(String[] args) {
+        Student[] students = new Student[100];
+        int numStudents = 0;
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("1. Add student");
+            System.out.println("2. Remove student");
+            System.out.println("3. Mark attendance");
+            System.out.println("4. Print report");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addStudent(students, numStudents);
+                    break;
+                case 2:
+                    System.out.print("Enter the student roll number to remove: ");
+                    int rollNumber = scanner.nextInt();
+                    removeStudent(students, numStudents, rollNumber);
+                    break;
+                case 3:
+                    System.out.print("Enter the student roll number to mark attendance: ");
+                    int rollNum = scanner.nextInt();
+                    System.out.print("Is the student present (1 for yes, 0 for no)? ");
+                    int isPresent = scanner.nextInt();
+                    markAttendance(students, numStudents, rollNum, isPresent);
+                    break;
+                case 4:
+                    printReport(students, numStudents);
+                    break;
+                case 5:
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+    }
+}
